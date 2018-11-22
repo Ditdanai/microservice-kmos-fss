@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kmosapp
+  namespace: gitlab-managed-apps
+  labels:
+    app: kmosapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kmosapp
+  template:
+    metadata:
+      labels:
+        app: kmosapp
+    spec:
+      containers:
+      - name: kmosapp
+        image: registry.gitlab.com/ito-community-team/kmos-webclientapi:_VERSION_
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+        - name: gitlab-registry
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: kmosapp
+  namespace: gitlab-managed-apps
+  labels:
+    app: kmosapp
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+      app: kmosapp
+
